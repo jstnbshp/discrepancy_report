@@ -1,0 +1,134 @@
+Product Requirements Document (PRD)
+Project Title: Advertising Data Comparison and Discrepancy Reporting
+Introduction
+This project aims to develop a system that compares digital advertising impression data from ad servers and pixel data. The primary objective is to identify discrepancies in total impressions for different creative IDs across multiple days, calculate the percentage difference, and generate a detailed report. The system will use Google Colab for initial testing and development and later migrate to a production environment.
+
+Objectives
+Data Ingestion: Load ad server and pixel data into the system.
+Data Preprocessing: Clean and standardize the ad server data, ignoring metadata headers.
+Metadata Integration: Use a Language Model (LLM) to enrich creative IDs with metadata.
+Data Aggregation: Sum impressions by creative ID.
+Comparison and Discrepancy Identification: Calculate differences and percentage discrepancies between datasets.
+Reporting: Generate a detailed report with discrepancies and save it as an Excel file with multiple sheets.
+Requirements
+Functional Requirements
+Data Ingestion:
+
+The system must be able to upload CSV files for ad server data and pixel data.
+The system should handle errors in file upload gracefully.
+The system must be able to skip metadata headers in the ad server data.
+Data Preprocessing:
+
+Standardize date formats across datasets.
+Clean and normalize creative IDs (e.g., remove leading/trailing spaces).
+Handle missing values by filling them with appropriate defaults (e.g., zero for impressions).
+Metadata Integration:
+
+Implement a function to enrich creative IDs with metadata using an LLM or mock function.
+Metadata should include attributes like advertisement type and category.
+Create a separate source file to map known terminology and issues. This source file will be used to analyze the metadata in the ad server data and output it in the discrepancy report.
+Data Aggregation:
+
+Aggregate data by summing impressions for each creative ID, ignoring the date.
+Comparison and Discrepancy Identification:
+
+Merge aggregated datasets on creative ID.
+Calculate the absolute difference and percentage difference in impressions.
+Format the percentage difference to two decimal places and append a percent symbol.
+Reporting:
+
+Generate a report of discrepancies and save it as an Excel file with separate sheets for discrepancies, pixel data, and ad server data.
+Ensure the Excel file is formatted for easy viewing in applications like Microsoft Excel.
+Differences Between SQL and Python for This Task
+SQL
+Advantages:
+
+Data Handling in Databases: SQL is inherently designed for querying and managing data stored in relational databases. If your data is already in a database, SQL is the most direct way to query and manipulate it.
+Aggregation and Filtering: SQL excels at operations like aggregation, filtering, and joining tables, which are fundamental to this task.
+Performance: SQL queries are optimized for performance in database engines. Complex joins and aggregations are often faster when executed directly within the database.
+Simplicity for Basic Operations: For straightforward data extraction, transformation, and loading (ETL) tasks, SQL is often simpler and more readable.
+Limitations:
+
+Complex Data Manipulations: SQL can become cumbersome and less readable for very complex data manipulations and transformations.
+Flexibility: SQL lacks the flexibility of a full programming language for advanced data processing and integrating with other tools and libraries.
+Python
+Advantages:
+
+Complex Data Processing: Python, with libraries like Pandas and NumPy, is highly suited for complex data transformations and manipulations.
+Integration: Python can easily integrate with various data sources and other tools, making it ideal for end-to-end data workflows.
+Data Visualization: Python offers powerful libraries like Matplotlib, Seaborn, and Plotly for data visualization, which can be useful for analyzing and presenting your findings.
+Machine Learning and Advanced Analytics: If your task involves machine learning or advanced analytics, Python provides extensive libraries and frameworks to support these tasks.
+Limitations:
+
+Performance: For very large datasets, Python might be slower compared to SQL executed directly within a database.
+Setup and Environment: Using Python requires a setup that includes the necessary libraries and possibly an integrated development environment (IDE).
+Test Plan
+Testing in SQL
+Data Preparation:
+
+Create tables pixel_data and ad_server_data.
+Insert test data into the tables.
+Data Preprocessing:
+
+Write SQL queries to clean and preprocess the data, ignoring metadata headers.
+Data Aggregation:
+
+Write SQL queries to sum impressions by creative ID.
+Comparison and Discrepancy Identification:
+
+Write SQL queries to calculate absolute and percentage differences in impressions.
+Reporting:
+
+Write SQL queries to generate the discrepancy report.
+Testing in Python
+Data Preparation:
+
+Load the data files into pandas DataFrames in Google Colab.
+Handle metadata headers during data loading.
+Data Preprocessing:
+
+Use pandas to clean and normalize the data.
+Data Aggregation:
+
+Use pandas to sum impressions by creative ID.
+Comparison and Discrepancy Identification:
+
+Use pandas to calculate absolute and percentage differences in impressions.
+Reporting:
+
+Use pandas and openpyxl to generate the discrepancy report and save it as an Excel file with multiple sheets.
+Milestones
+Week 1:
+
+Set up Google Colab environment.
+Implement data ingestion and preprocessing.
+Week 2:
+
+Integrate metadata enrichment function.
+Implement data aggregation logic.
+Week 3:
+
+Develop comparison and discrepancy identification logic.
+Format percentage differences correctly.
+Week 4:
+
+Generate the Excel report with multiple sheets.
+Conduct testing with SQL and Python implementations.
+Week 5:
+
+Review and refine the system based on feedback.
+Prepare for migration to the production environment.
+Stakeholders
+Project Manager: Oversees the project timeline and deliverables.
+Data Analysts: Use the system to compare and analyze advertising data.
+Developers: Implement the system functionalities.
+IT Security: Ensure data security and compliance.
+End Users: Individuals who will upload data and review reports.
+Appendix
+Sample Data Files: Provide examples of ad server data and pixel data CSV files for testing.
+Metadata Mapping: Documentation on the attributes added to creative IDs via the LLM.
+Technical Specifications: Detailed documentation on the preprocessing, aggregation, and comparison algorithms used.
+Approval
+Project Sponsor: [Name]
+Date: [Date]
+This PRD outlines the scope, requirements, and timeline for developing the advertising data comparison and discrepancy reporting system. Please review and provide feedback or approval to proceed with development.
