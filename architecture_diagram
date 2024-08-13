@@ -1,1 +1,38 @@
+# System Architecture
+
+## Overview
+
+This document provides a visual representation and description of the system architecture for the Advertising Data Comparison and Discrepancy Report Automation project.
+
+## Architecture Diagram
+
+![Architecture Diagram](architecture_diagram.png)
+
+### Components
+
+1. **Data Ingestion**:
+    - **Google Cloud Functions**: Extracts Ad server data from emails.
+    - **Google BigQuery**: Stores both Ad server and internal pixel data for analysis.
+
+2. **Data Processing**:
+    - **BigQuery SQL Queries**: Compares datasets and identifies discrepancies.
+    - **Date Range Verification**: Ensures data from both sources corresponds to the correct time period.
+
+3. **Report Generation**:
+    - **BigQuery**: Generates discrepancy reports and saves them in partitioned tables.
+    - **Google Data Studio**: Visualizes reports for user analysis.
+
+4. **Notation System**:
+    - **Google Sheets/Custom Web App**: Provides an interface for users to add and edit notations.
+    - **BigQuery ML**: Uses historical data to predict future notations.
+
+## Data Flow
+
+1. Ad server data is extracted via Cloud Functions and loaded into BigQuery.
+2. Internal pixel data is regularly imported into BigQuery.
+3. BigQuery processes the data, checks for discrepancies, and generates reports.
+4. Reports are visualized in Google Data Studio.
+5. Users add notations via Google Sheets or a custom web app.
+6. BigQuery ML uses these notations to enhance future report generation.
+
 
