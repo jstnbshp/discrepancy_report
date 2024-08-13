@@ -1,134 +1,139 @@
-Product Requirements Document (PRD)
-Project Title: Advertising Data Comparison and Discrepancy Reporting
-Introduction
-This project aims to develop a system that compares digital advertising impression data from ad servers and pixel data. The primary objective is to identify discrepancies in total impressions for different creative IDs across multiple days, calculate the percentage difference, and generate a detailed report. The system will use Google Colab for initial testing and development and later migrate to a production environment.
+Certainly! Below is an updated Product Requirements Document (PRD) for your discrepancy report automation project:
 
-Objectives
-Data Ingestion: Load ad server and pixel data into the system.
-Data Preprocessing: Clean and standardize the ad server data, ignoring metadata headers.
-Metadata Integration: Use a Language Model (LLM) to enrich creative IDs with metadata.
-Data Aggregation: Sum impressions by creative ID.
-Comparison and Discrepancy Identification: Calculate differences and percentage discrepancies between datasets.
-Reporting: Generate a detailed report with discrepancies and save it as an Excel file with multiple sheets.
-Requirements
-Functional Requirements
-Data Ingestion:
+---
 
-The system must be able to upload CSV files for ad server data and pixel data.
-The system should handle errors in file upload gracefully.
-The system must be able to skip metadata headers in the ad server data.
-Data Preprocessing:
+# **Product Requirements Document (PRD)**
 
-Standardize date formats across datasets.
-Clean and normalize creative IDs (e.g., remove leading/trailing spaces).
-Handle missing values by filling them with appropriate defaults (e.g., zero for impressions).
-Metadata Integration:
+## **Project Title**: Advertising Data Comparison and Discrepancy Report Automation
 
-Implement a function to enrich creative IDs with metadata using an LLM or mock function.
-Metadata should include attributes like advertisement type and category.
-Create a separate source file to map known terminology and issues. This source file will be used to analyze the metadata in the ad server data and output it in the discrepancy report.
-Data Aggregation:
+### **Version**: 2.1  
+### **Date**: [Insert Date]
 
-Aggregate data by summing impressions for each creative ID, ignoring the date.
-Comparison and Discrepancy Identification:
+### **Prepared by**: [Your Name/Team Name]
 
-Merge aggregated datasets on creative ID.
-Calculate the absolute difference and percentage difference in impressions.
-Format the percentage difference to two decimal places and append a percent symbol.
-Reporting:
+---
 
-Generate a report of discrepancies and save it as an Excel file with separate sheets for discrepancies, pixel data, and ad server data.
-Ensure the Excel file is formatted for easy viewing in applications like Microsoft Excel.
-Differences Between SQL and Python for This Task
-SQL
-Advantages:
+## **1. Objective**
 
-Data Handling in Databases: SQL is inherently designed for querying and managing data stored in relational databases. If your data is already in a database, SQL is the most direct way to query and manipulate it.
-Aggregation and Filtering: SQL excels at operations like aggregation, filtering, and joining tables, which are fundamental to this task.
-Performance: SQL queries are optimized for performance in database engines. Complex joins and aggregations are often faster when executed directly within the database.
-Simplicity for Basic Operations: For straightforward data extraction, transformation, and loading (ETL) tasks, SQL is often simpler and more readable.
-Limitations:
+The objective of this project is to automate the generation and management of discrepancy reports between external Ad server data and internal pixel data using Google BigQuery. The system will allow for real-time data ingestion, automated report generation, easy editing and autosaving of notations, and machine learning-driven insights to enhance future reports.
 
-Complex Data Manipulations: SQL can become cumbersome and less readable for very complex data manipulations and transformations.
-Flexibility: SQL lacks the flexibility of a full programming language for advanced data processing and integrating with other tools and libraries.
-Python
-Advantages:
+## **2. Scope**
 
-Complex Data Processing: Python, with libraries like Pandas and NumPy, is highly suited for complex data transformations and manipulations.
-Integration: Python can easily integrate with various data sources and other tools, making it ideal for end-to-end data workflows.
-Data Visualization: Python offers powerful libraries like Matplotlib, Seaborn, and Plotly for data visualization, which can be useful for analyzing and presenting your findings.
-Machine Learning and Advanced Analytics: If your task involves machine learning or advanced analytics, Python provides extensive libraries and frameworks to support these tasks.
-Limitations:
+This project covers the following key aspects:
+- **Data Ingestion**: Automating the import of external Ad server data from emails and the internal pixel dataset into Google BigQuery.
+- **Data Processing**: Running automated queries to compare datasets and identify discrepancies, including checking for mismatched date ranges.
+- **Reporting**: Generating and maintaining detailed discrepancy reports with historical data tracking.
+- **Notation System**: Providing an interface for easy editing and autosaving of report notations, with the ability to leverage past notations for future reports.
+- **Machine Learning**: Implementing machine learning models to predict notations based on historical data, enhancing the accuracy and efficiency of report generation.
 
-Performance: For very large datasets, Python might be slower compared to SQL executed directly within a database.
-Setup and Environment: Using Python requires a setup that includes the necessary libraries and possibly an integrated development environment (IDE).
-Test Plan
-Testing in SQL
-Data Preparation:
+## **3. Requirements**
 
-Create tables pixel_data and ad_server_data.
-Insert test data into the tables.
-Data Preprocessing:
+### **3.1 Functional Requirements**
 
-Write SQL queries to clean and preprocess the data, ignoring metadata headers.
-Data Aggregation:
+1. **Data Ingestion**:
+   - Automate the extraction of Ad server data from emails using Google Apps Script or Google Cloud Functions.
+   - Load extracted data into Google BigQuery tables.
+   - Regularly import internal pixel data into Google BigQuery.
 
-Write SQL queries to sum impressions by creative ID.
-Comparison and Discrepancy Identification:
+2. **Data Processing**:
+   - Create SQL queries in BigQuery to compare Ad server data and internal pixel data.
+   - Implement logic to verify and highlight mismatched date ranges between datasets.
+   - Store the results of these queries in BigQuery tables or export them to a Google Sheet for further processing.
 
-Write SQL queries to calculate absolute and percentage differences in impressions.
-Reporting:
+3. **Reporting**:
+   - Use BigQuery to generate automated discrepancy reports at scheduled intervals.
+   - Store historical reports in partitioned BigQuery tables to enable easy access and querying of past data.
+   - Utilize Google Data Studio or a similar tool to create visualizations and dashboards for discrepancy reports.
 
-Write SQL queries to generate the discrepancy report.
-Testing in Python
-Data Preparation:
+4. **Notation System**:
+   - Implement a Google Sheets-based interface or develop a custom web application for easy editing and autosaving of notations.
+   - Ensure that all notation edits are autosaved and synced back to BigQuery.
+   - Allow users to view and edit the date ranges related to discrepancies directly within the interface.
 
-Load the data files into pandas DataFrames in Google Colab.
-Handle metadata headers during data loading.
-Data Preprocessing:
+5. **Machine Learning**:
+   - Utilize BigQuery ML to develop and train models on historical data for predicting notations on future reports.
+   - Implement a feedback loop where user actions on suggested notations are logged and used to refine the machine learning model.
+   - Continuously improve the model based on user feedback and evolving data patterns.
 
-Use pandas to clean and normalize the data.
-Data Aggregation:
+### **3.2 Non-Functional Requirements**
 
-Use pandas to sum impressions by creative ID.
-Comparison and Discrepancy Identification:
+1. **Scalability**:
+   - The system must efficiently handle large datasets and scale seamlessly as data volumes increase.
+   - All components should integrate smoothly with Google Cloud infrastructure to ensure scalability and reliability.
 
-Use pandas to calculate absolute and percentage differences in impressions.
-Reporting:
+2. **Usability**:
+   - The notation editing interface must be user-friendly, with features such as autosave, easy access to historical notations, and real-time collaboration.
+   - Reports and dashboards should be easy to interpret, with clear visualization of discrepancies and relevant data.
 
-Use pandas and openpyxl to generate the discrepancy report and save it as an Excel file with multiple sheets.
-Milestones
-Week 1:
+3. **Security**:
+   - Implement row-level security and access controls in BigQuery to ensure that only authorized users can access sensitive data.
+   - Ensure that all data transfers and storage comply with relevant data privacy and security standards.
 
-Set up Google Colab environment.
-Implement data ingestion and preprocessing.
-Week 2:
+4. **Performance**:
+   - Queries and data processing should be optimized for performance to ensure timely report generation and data updates.
+   - The system should be responsive, with minimal latency in data ingestion, processing, and report generation.
 
-Integrate metadata enrichment function.
-Implement data aggregation logic.
-Week 3:
+### **3.3 Technical Requirements**
 
-Develop comparison and discrepancy identification logic.
-Format percentage differences correctly.
-Week 4:
+1. **Google BigQuery**:
+   - Use BigQuery as the primary data storage and processing platform.
+   - Implement partitioned and clustered tables for efficient storage and querying of historical data.
 
-Generate the Excel report with multiple sheets.
-Conduct testing with SQL and Python implementations.
-Week 5:
+2. **Google Cloud Functions / Google Apps Script**:
+   - Automate the extraction of Ad server data from emails using Google Cloud Functions or Google Apps Script.
+   - Integrate these scripts with BigQuery for seamless data ingestion.
 
-Review and refine the system based on feedback.
-Prepare for migration to the production environment.
-Stakeholders
-Project Manager: Oversees the project timeline and deliverables.
-Data Analysts: Use the system to compare and analyze advertising data.
-Developers: Implement the system functionalities.
-IT Security: Ensure data security and compliance.
-End Users: Individuals who will upload data and review reports.
-Appendix
-Sample Data Files: Provide examples of ad server data and pixel data CSV files for testing.
-Metadata Mapping: Documentation on the attributes added to creative IDs via the LLM.
-Technical Specifications: Detailed documentation on the preprocessing, aggregation, and comparison algorithms used.
-Approval
-Project Sponsor: [Name]
-Date: [Date]
-This PRD outlines the scope, requirements, and timeline for developing the advertising data comparison and discrepancy reporting system. Please review and provide feedback or approval to proceed with development.
+3. **Google Sheets / Custom Web Application**:
+   - Develop an interface for editing and autosaving notations, either using Google Sheets or a custom web app built on Google App Engine or Firebase.
+   - Ensure the interface supports real-time collaboration and is integrated with BigQuery.
+
+4. **BigQuery ML**:
+   - Use BigQuery ML to build and train machine learning models for predicting notations based on historical data.
+   - Implement logic to incorporate user feedback into model training.
+
+5. **Google Data Studio**:
+   - Use Google Data Studio or similar tools for visualizing discrepancy reports and providing dashboards for users.
+
+## **4. Timeline**
+
+### **Phase 1: Prototype Development** (4-6 weeks)
+- Set up initial data pipeline for Ad server and internal pixel data.
+- Develop basic SQL queries for discrepancy analysis in BigQuery.
+- Create a prototype interface for notation editing using Google Sheets.
+
+### **Phase 2: Automation and Integration** (6-8 weeks)
+- Automate data ingestion using Google Cloud Functions or Apps Script.
+- Develop scheduled queries in BigQuery for regular report generation.
+- Implement machine learning models in BigQuery ML for notation prediction.
+
+### **Phase 3: User Testing and Feedback** (4 weeks)
+- Conduct user testing on the notation interface and report generation process.
+- Gather feedback and refine the system based on user input.
+- Optimize performance and scalability.
+
+### **Phase 4: Final Deployment and Training** (4 weeks)
+- Finalize deployment of the system in the production environment.
+- Provide training to users on the new system and gather initial feedback.
+- Implement any final adjustments based on feedback.
+
+## **5. Risks and Mitigations**
+
+1. **Data Ingestion Failures**:
+   - Risk: Issues with email extraction or data loading into BigQuery could delay report generation.
+   - Mitigation: Implement robust error handling and logging in Cloud Functions/Apps Script, with alerts for failures.
+
+2. **Machine Learning Model Accuracy**:
+   - Risk: Initial models may not accurately predict notations, leading to incorrect suggestions.
+   - Mitigation: Use a phased approach to model deployment, starting with simple models and gradually improving based on user feedback.
+
+3. **User Adoption**:
+   - Risk: Users may be resistant to adopting a new system.
+   - Mitigation: Provide comprehensive training and support, and involve users early in the testing process to gather feedback and make adjustments.
+
+## **6. Conclusion**
+
+This PRD outlines a comprehensive approach to automating the discrepancy report generation process using Google BigQuery and associated tools. By implementing a scalable, user-friendly system with robust data processing and machine learning capabilities, the project aims to significantly reduce manual effort, improve accuracy, and enhance the overall efficiency of report generation and management.
+
+---
+
+This PRD should serve as a guide for your team to implement the system and track progress throughout the project lifecycle.
