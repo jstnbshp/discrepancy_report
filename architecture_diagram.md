@@ -16,7 +16,7 @@ C -->|4. Data Comparison Queries| E[Discrepancy Detection]
 E -->|5. Store Reports| F[BigQuery Partitioned Tables]
 F -->|6. Visualization| G[Google Data Studio Dashboard]
 
-G -->|7. User Review & Notations| H[Notation Interface<br/>(Google Sheets/Web App)]
+G -->|7. User Review & Notations| H[Notation Interface (Google Sheets/Web App)]
 H -->|8. Save Notations| F
 
 F -->|9. Train ML Model| I[BigQuery ML]
