@@ -1,38 +1,42 @@
-# System Architecture
+# System Architecture Diagram
 
-## Overview
+The following diagram illustrates the high-level architecture of the system:
 
-This document provides a visual representation and description of the system architecture for the Advertising Data Comparison and Discrepancy Report Automation project.
+```mermaid
+graph TD
 
-## Architecture Diagram
+%% Define components
+A[Ad Server Emails] -->|1. Data Extraction| B[Google Cloud Functions]
+B -->|2. Load Data| C[Google BigQuery]
 
-![Architecture Diagram](architecture_diagram.png)
+D[Internal Pixel Data] -->|3. Scheduled Import| C
 
-### Components
+C -->|4. Data Comparison Queries| E[Discrepancy Detection]
 
-1. **Data Ingestion**:
-    - **Google Cloud Functions**: Extracts Ad server data from emails.
-    - **Google BigQuery**: Stores both Ad server and internal pixel data for analysis.
+E -->|5. Store Reports| F[BigQuery Partitioned Tables]
+F -->|6. Visualization| G[Google Data Studio Dashboard]
 
-2. **Data Processing**:
-    - **BigQuery SQL Queries**: Compares datasets and identifies discrepancies.
-    - **Date Range Verification**: Ensures data from both sources corresponds to the correct time period.
+G -->|7. User Review & Notations| H[Notation Interface<br/>(Google Sheets/Web App)]
+H -->|8. Save Notations| F
 
-3. **Report Generation**:
-    - **BigQuery**: Generates discrepancy reports and saves them in partitioned tables.
-    - **Google Data Studio**: Visualizes reports for user analysis.
+F -->|9. Train ML Model| I[BigQuery ML]
+I -->|10. Predict Notations| E
 
-4. **Notation System**:
-    - **Google Sheets/Custom Web App**: Provides an interface for users to add and edit notations.
-    - **BigQuery ML**: Uses historical data to predict future notations.
+%% Define interactions
+subgraph Data Ingestion
+    A
+    B
+    D
+end
 
-## Data Flow
+subgraph Data Processing & Storage
+    C
+    E
+    F
+    I
+end
 
-1. Ad server data is extracted via Cloud Functions and loaded into BigQuery.
-2. Internal pixel data is regularly imported into BigQuery.
-3. BigQuery processes the data, checks for discrepancies, and generates reports.
-4. Reports are visualized in Google Data Studio.
-5. Users add notations via Google Sheets or a custom web app.
-6. BigQuery ML uses these notations to enhance future report generation.
-
-
+subgraph User Interaction
+    G
+    H
+end
