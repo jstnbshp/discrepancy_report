@@ -1,1 +1,120 @@
+### Steps for Implementing the ML Model
+
+#### 1. **Data Preparation**
+   
+   Before training an ML model, you need to ensure that your data is well-prepared and labeled. In your case, this might involve creating a dataset that includes past discrepancies along with the associated notations made by users. This historical data will serve as the basis for training your model.
+
+   **Example Query to Prepare Training Data:**
+
+   ```sql
+   CREATE OR REPLACE TABLE your_project.your_dataset.training_data AS
+   SELECT
+       discrepancy_id,
+       feature1,  -- Replace with relevant features
+       feature2,  -- Replace with relevant features
+       feature3,  -- Replace with relevant features
+       user_notation AS label  -- The target variable (label) that the model will predict
+   FROM
+       your_project.your_dataset.discrepancies
+   WHERE
+       user_notation IS NOT NULL;
+   ```
+
+   - **Features (`feature1`, `feature2`, `feature3`)**: These are the attributes of the discrepancies that might help the model learn patterns. Replace these with relevant columns from your data.
+   - **Label (`user_notation`)**: This is the output you want the model to predict, based on past user-provided notations.
+
+#### 2. **Model Training**
+
+   With your training data ready, you can now use BigQuery ML to create and train a model. The following is an example of how to train a simple classification model.
+
+   **Example Query to Train the Model:**
+
+   ```sql
+   CREATE OR REPLACE MODEL your_project.your_dataset.notation_prediction_model
+   OPTIONS(MODEL_TYPE='LOGISTIC_REG', input_label_cols=['label']) AS
+   SELECT
+       feature1,
+       feature2,
+       feature3,
+       label
+   FROM
+       your_project.your_dataset.training_data;
+   ```
+
+   - **MODEL_TYPE='LOGISTIC_REG'**: This specifies a logistic regression model, which is useful for classification problems. Depending on your needs, you might choose a different model type, such as `BOOSTED_TREE_CLASSIFIER` or `DNN_CLASSIFIER`.
+   - **input_label_cols=['label']**: This indicates the column that contains the labels (the notations in your case) that the model should learn to predict.
+
+#### 3. **Evaluating the Model**
+
+   After training the model, you should evaluate its performance to ensure it is making accurate predictions. BigQuery ML provides a way to assess model quality using metrics like accuracy, precision, recall, and AUC.
+
+   **Example Query to Evaluate the Model:**
+
+   ```sql
+   SELECT
+       *
+   FROM
+       ML.EVALUATE(MODEL your_project.your_dataset.notation_prediction_model,
+                   (
+                       SELECT
+                           feature1,
+                           feature2,
+                           feature3,
+                           label
+                       FROM
+                           your_project.your_dataset.training_data
+                   ));
+   ```
+
+   This will return metrics that indicate how well your model is performing on the training data.
+
+#### 4. **Making Predictions**
+
+   Once the model is trained and evaluated, you can use it to make predictions on new data. This can be part of your automated workflow, where new discrepancies are fed into the model, and it predicts the notation.
+
+   **Example Query to Make Predictions:**
+
+   ```sql
+   CREATE OR REPLACE TABLE your_project.your_dataset.predicted_notations AS
+   SELECT
+       discrepancy_id,
+       feature1,
+       feature2,
+       feature3,
+       predicted_label AS predicted_notation
+   FROM
+       ML.PREDICT(MODEL your_project.your_dataset.notation_prediction_model,
+                  (
+                      SELECT
+                          discrepancy_id,
+                          feature1,
+                          feature2,
+                          feature3
+                      FROM
+                          your_project.your_dataset.new_discrepancies
+                  ));
+   ```
+
+   - **ML.PREDICT**: This function uses the trained model to predict the labels (notations) for new data.
+
+#### 5. **Integrating with the System**
+
+   - **Automatic Predictions**: Integrate the prediction query into your automated workflow so that every time new discrepancies are detected, the system automatically generates suggested notations.
+   - **User Feedback Loop**: Incorporate a feedback loop where users can confirm, modify, or reject the predicted notations. This feedback can be used to retrain and improve the model over time.
+   - **Storing Predictions**: Store the predictions along with the actual notations provided by users, which can later be used for further model training and evaluation.
+
+### Example Integration Workflow
+
+1. **Data Ingestion**: As new data is ingested, discrepancies are detected, and relevant features are extracted.
+2. **Model Prediction**: The ML model predicts notations for each detected discrepancy.
+3. **User Interaction**: Users review the predicted notations, modify them if needed, and confirm.
+4. **Feedback and Retraining**: User modifications are stored and used to periodically retrain the model, improving its accuracy over time.
+5. **Report Generation**: The finalized notations are used to generate comprehensive discrepancy reports.
+
+### Next Steps
+
+- **Train Initial Model**: Start by training an initial model using historical data and evaluate its performance.
+- **Iterate and Improve**: Use feedback from real-world use to refine the model and its predictions.
+- **Automation**: Integrate the model into your automated workflow to ensure that predictions are made in real-time and continuously improve.
+
 
