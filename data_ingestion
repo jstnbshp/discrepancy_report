@@ -1,1 +1,118 @@
+import base64
+import json
+import os
+import re
+from google.cloud import bigquery
+from google.cloud import storage
+from google.cloud import pubsub_v1
+from google.auth import credentials
+from googleapiclient.discovery import build
+from google.oauth2 import service_account
 
+# Constants (replace with your project-specific values)
+GCP_PROJECT = "your-gcp-project-id"
+BQ_DATASET = "your_dataset_name"
+BQ_TABLE = "your_table_name"
+GMAIL_QUERY = "from:adserver@example.com subject:Ad Report"
+SERVICE_ACCOUNT_FILE = "path/to/your/service-account.json"
+TEMP_FILE_LOCATION = "/tmp/email_data.json"
+
+# Set up Google Cloud credentials
+credentials = service_account.Credentials.from_service_account_file(SERVICE_ACCOUNT_FILE)
+
+# Initialize Gmail API service
+def get_gmail_service():
+    service = build('gmail', 'v1', credentials=credentials)
+    return service
+
+# Fetch emails from Gmail
+def fetch_emails():
+    service = get_gmail_service()
+    results = service.users().messages().list(userId='me', q=GMAIL_QUERY).execute()
+    messages = results.get('messages', [])
+    
+    email_data = []
+    for message in messages:
+        msg = service.users().messages().get(userId='me', id=message['id']).execute()
+        email_data.append(extract_data_from_email(msg))
+        
+    return email_data
+
+# Extract data from an individual email
+def extract_data_from_email(message):
+    parts = message.get('payload', {}).get('parts', [])
+    for part in parts:
+        if part.get('mimeType') == 'application/json':
+            data = part['body'].get('data')
+            if data:
+                decoded_data = base64.urlsafe_b64decode(data).decode('utf-8')
+                return json.loads(decoded_data)
+    return {}
+
+# Load data into BigQuery
+def load_data_to_bigquery(data):
+    client = bigquery.Client(credentials=credentials, project=GCP_PROJECT)
+    table_ref = client.dataset(BQ_DATASET).table(BQ_TABLE)
+    
+    # Convert data to BigQuery's expected format
+    rows_to_insert = [
+        {
+            "field1": record["field1"],
+            "field2": record["field2"],
+            "field3": record["field3"],
+            # Add other fields based on your schema
+        }
+        for record in data
+    ]
+    
+    errors = client.insert_rows_json(table_ref, rows_to_insert)
+    if errors:
+        print(f"Encountered errors while inserting rows: {errors}")
+    else:
+        print("Data loaded successfully into BigQuery.")
+
+# Main function
+def main():
+    print("Starting data ingestion process...")
+    
+    # Fetch and parse emails
+    email_data = fetch_emails()
+    if not email_data:
+        print("No new emails found matching the query.")
+        return
+    
+    # Load the parsed data into BigQuery
+    load_data_to_bigquery(email_data)
+    
+    print("Data ingestion process completed.")
+
+if __name__ == "__main__":
+    main()
+
+###
+
+Explanation of the Code
+Setup and Configuration:
+
+GCP_PROJECT: Your Google Cloud project ID.
+BQ_DATASET: The name of the BigQuery dataset where the data will be stored.
+BQ_TABLE: The BigQuery table name where the data will be inserted.
+GMAIL_QUERY: The Gmail search query used to fetch specific emails (e.g., emails from the Ad server).
+SERVICE_ACCOUNT_FILE: The path to your Google Cloud service account credentials file.
+Gmail API Integration:
+
+get_gmail_service(): Initializes the Gmail API service using the provided credentials.
+fetch_emails(): Fetches emails matching the query from the Gmail API.
+extract_data_from_email(): Decodes and parses JSON data attached to emails.
+BigQuery Integration:
+
+load_data_to_bigquery(): Converts the extracted data to the required BigQuery format and inserts it into the specified BigQuery table.
+Main Workflow:
+
+main(): Coordinates the entire process: fetching emails, extracting the necessary data, and loading it into BigQuery.
+Next Steps
+Customize the Fields: Adjust the rows_to_insert section to match the schema of your BigQuery table.
+Error Handling: Add more robust error handling and logging as needed.
+Deployment: Deploy this script as a Google Cloud Function or run it in a managed environment to automate the data ingestion process.
+
+/###
